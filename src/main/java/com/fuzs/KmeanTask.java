@@ -16,6 +16,24 @@ import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.api.java.functions.FunctionAnnotation;
 import org.apache.flink.configuration.Configuration;
 
+/** 迭代的数据流向：DataStream → IterativeStream → DataStream
+ * 以下代码以流开始并连续应用迭代体。大于0的元素将被发送回反馈（feedback）通道，继续迭代，其余元素将向下游转发，离开迭代。
+    IterativeStream<Long> iteration = initialStream.iterate();
+    DataStream<Long> iterationBody = iteration.map (do something);
+    DataStream<Long> feedback = iterationBody.filter(new FilterFunction<Long>(){
+        @Override
+        public boolean filter(Long value) throws Exception {
+            return value > 0;
+        }
+    });//这里设置feedback这个数据流是被反馈的通道，只要是value>0的数据都会被重新迭代计算。
+    iteration.closeWith(feedback);
+    DataStream<Long> output = iterationBody.filter(new FilterFunction<Long>(){
+        @Override
+        public boolean filter(Long value) throws Exception {
+            return value <= 0;
+        }
+    });
+*/
 public class KmeanTask {
     public static void main(String[] args) throws Exception {
             final ParameterTool params = ParameterTool.fromArgs(args);
