@@ -21,9 +21,12 @@ public class App {
         
         IterativeDataSet<Tuple2<Double, Double>> lrIte = lr.iterate(400);
 
+
         DataSet<Tuple2<Double, Double>>  iterBody =  data.map(new calDiff()).withBroadcastSet(lrIte, "lr")
         .reduce(new calSum())
         .map(new calRes()).withBroadcastSet(lr, "lr");
+
+
 
        DataSet<Tuple2<Double, Double>>   res = lrIte.closeWith(iterBody);
 
